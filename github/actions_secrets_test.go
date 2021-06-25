@@ -433,7 +433,7 @@ func TestActionsService_CreateOrUpdateOrgSecret(t *testing.T) {
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	input := &EncryptedSecret{
+	input := &EncryptedOrgSecret{
 		Name:                  "NAME",
 		EncryptedValue:        "QIv=",
 		KeyID:                 "1234",
@@ -884,6 +884,23 @@ func TestEncryptedSecret_Marshal(t *testing.T) {
 	testJSONMarshal(t, &EncryptedSecret{}, "{}")
 
 	u := &EncryptedSecret{
+		Name:           "n",
+		KeyID:          "kid",
+		EncryptedValue: "e",
+	}
+
+	want := `{
+		"key_id": "kid",
+		"encrypted_value": "e"
+	}`
+
+	testJSONMarshal(t, u, want)
+}
+
+func TestEncryptedOrgSecret_Marshal(t *testing.T) {
+	testJSONMarshal(t, &EncryptedOrgSecret{}, "{}")
+
+	u := &EncryptedOrgSecret{
 		Name:                  "n",
 		KeyID:                 "kid",
 		EncryptedValue:        "e",

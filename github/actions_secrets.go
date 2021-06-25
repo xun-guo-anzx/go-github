@@ -172,11 +172,24 @@ type SelectedRepoIDs []int64
 // LibSodium (see documentation here: https://libsodium.gitbook.io/doc/bindings_for_other_languages)
 // using the public key retrieved using the GetPublicKey method.
 type EncryptedSecret struct {
+	Name           string `json:"-"`
+	KeyID          string `json:"key_id"`
+	EncryptedValue string `json:"encrypted_value"`
+}
+
+// EncryptedOrgSecret represents a organisation secret that is encrypted using a public key.
+//
+// The value of EncryptedValue must be your secret, encrypted with
+// LibSodium (see documentation here: https://libsodium.gitbook.io/doc/bindings_for_other_languages)
+// using the public key retrieved using the GetPublicKey method.
+//
+// Providing options for user to add repository allow list for organisation secret
+type EncryptedOrgSecret struct {
 	Name                  string          `json:"-"`
 	KeyID                 string          `json:"key_id"`
 	EncryptedValue        string          `json:"encrypted_value"`
-	Visibility            string          `json:"visibility,omitempty"`
-	SelectedRepositoryIDs SelectedRepoIDs `json:"selected_repository_ids,omitempty"`
+	Visibility            string          `json:"visibility"`
+	SelectedRepositoryIDs SelectedRepoIDs `json:"selected_repository_ids"`
 }
 
 // CreateOrUpdateRepoSecret creates or updates a repository secret with an encrypted value.
@@ -254,7 +267,7 @@ func (s *ActionsService) GetOrgSecret(ctx context.Context, org, name string) (*S
 // CreateOrUpdateOrgSecret creates or updates an organization secret with an encrypted value.
 //
 // GitHub API docs: https://docs.github.com/en/free-pro-team@latest/rest/reference/actions/#create-or-update-an-organization-secret
-func (s *ActionsService) CreateOrUpdateOrgSecret(ctx context.Context, org string, eSecret *EncryptedSecret) (*Response, error) {
+func (s *ActionsService) CreateOrUpdateOrgSecret(ctx context.Context, org string, eSecret *EncryptedOrgSecret) (*Response, error) {
 	u := fmt.Sprintf("orgs/%v/actions/secrets/%v", org, eSecret.Name)
 
 	req, err := s.client.NewRequest("PUT", u, eSecret)
